@@ -1,0 +1,634 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "name": "Fashion MNSIT CNN Exploration 1.ipynb",
+      "version": "0.3.2",
+      "provenance": [],
+      "collapsed_sections": []
+    },
+    "kernelspec": {
+      "display_name": "Python 3",
+      "language": "python",
+      "name": "python3"
+    }
+  },
+  "cells": [
+    {
+      "metadata": {
+        "id": "DvjlJwfV76Zz",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 34
+        },
+        "outputId": "ba3042ca-cd85-45bf-9f98-2b9f448e114f"
+      },
+      "cell_type": "code",
+      "source": [
+        "from keras.datasets import fashion_mnist"
+      ],
+      "execution_count": 1,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "Using TensorFlow backend.\n"
+          ],
+          "name": "stderr"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "id": "1ieXH3yQ76Z3",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 153
+        },
+        "outputId": "85bc62cd-843e-4176-f056-1baaaf1c0c3b"
+      },
+      "cell_type": "code",
+      "source": [
+        "(X_train, y_train), (X_test, y_test) = fashion_mnist.load_data()"
+      ],
+      "execution_count": 2,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "Downloading data from http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-labels-idx1-ubyte.gz\n",
+            "32768/29515 [=================================] - 0s 5us/step\n",
+            "Downloading data from http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz\n",
+            "26427392/26421880 [==============================] - 5s 0us/step\n",
+            "Downloading data from http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-labels-idx1-ubyte.gz\n",
+            "8192/5148 [===============================================] - 0s 0us/step\n",
+            "Downloading data from http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-images-idx3-ubyte.gz\n",
+            "4423680/4422102 [==============================] - 1s 0us/step\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "id": "CQSADLzB76Z8",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "import numpy as np\n",
+        "%matplotlib inline\n",
+        "import matplotlib.pyplot as plt"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "id": "bqxpB9Pr76Z-",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 34
+        },
+        "outputId": "210ad57d-c71a-4d03-fa06-ab7e12c46674"
+      },
+      "cell_type": "code",
+      "source": [
+        "X_train[0].shape"
+      ],
+      "execution_count": 4,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "(28, 28)"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 4
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "id": "Ugc6mAd476aB",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "cell_type": "code",
+      "source": [
+        "#Convert pixels to floats\n",
+        "\n",
+        "X_train = X_train.astype('float32')\n",
+        "X_test = X_test.astype('float32')"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "id": "r2MCq1PN76aD",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "cell_type": "code",
+      "source": [
+        "#Scale Pixels\n",
+        "\n",
+        "X_train /= 255.0\n",
+        "X_test /= 255.0"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "id": "RHAaUkgD76aF",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "cell_type": "code",
+      "source": [
+        "#Transform classes to categorical list\n",
+        "\n",
+        "from keras.utils.np_utils import to_categorical\n",
+        "\n",
+        "y_train_cat = to_categorical(y_train)\n",
+        "y_test_cat = to_categorical(y_test)"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "id": "ywZ51jpK76aI",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "cell_type": "code",
+      "source": [
+        "X_train_reshaped = X_train.reshape(-1,28,28,1)\n",
+        "X_test_reshaped = X_test.reshape(-1,28,28,1)"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "id": "r1tWAOlO76aK",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 51
+        },
+        "outputId": "e07b62d9-ab44-4ab6-917e-9461d587db5c"
+      },
+      "cell_type": "code",
+      "source": [
+        "print(X_train_reshaped.shape)\n",
+        "print(X_test_reshaped.shape)"
+      ],
+      "execution_count": 9,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "(60000, 28, 28, 1)\n",
+            "(10000, 28, 28, 1)\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "id": "HVGGdvnz76aO",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "cell_type": "code",
+      "source": [
+        "import keras.backend as K\n",
+        "from keras.models import Sequential\n",
+        "from keras.layers import Dense,Conv2D,Flatten,MaxPool2D"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "id": "Ex4Zx5nj76aP",
+        "colab_type": "text"
+      },
+      "cell_type": "markdown",
+      "source": [
+        "### Trying:\n",
+        "    \n",
+        "    1 Conv2D layer\n",
+        "    1 MaxPool2D layer\n",
+        "    \n",
+        "    \n",
+        "    1 Flatten layer\n",
+        "    1 Dense Inner layer\n",
+        "    1 Output Layer"
+      ]
+    },
+    {
+      "metadata": {
+        "id": "3AjLj_eJ76aR",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "cell_type": "code",
+      "source": [
+        "K.clear_session()\n",
+        "\n",
+        "model = Sequential()\n",
+        "model.add(Conv2D(256,(3,3),input_shape=(28,28,1),activation='relu'))\n",
+        "model.add(MaxPool2D(pool_size=(2,2)))\n",
+        "\n",
+        "model.add(Flatten())\n",
+        "model.add(Dense(128,activation='relu'))\n",
+        "model.add(Dense(10,activation='softmax'))\n",
+        "\n",
+        "model.compile(loss='categorical_crossentropy',optimizer='rmsprop',metrics=['accuracy'])"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "id": "x9VsSRNI76aS",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 306
+        },
+        "outputId": "df6d4166-ed64-495b-ec71-5d50bddb2894"
+      },
+      "cell_type": "code",
+      "source": [
+        "model.summary()"
+      ],
+      "execution_count": 12,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "_________________________________________________________________\n",
+            "Layer (type)                 Output Shape              Param #   \n",
+            "=================================================================\n",
+            "conv2d_1 (Conv2D)            (None, 26, 26, 256)       2560      \n",
+            "_________________________________________________________________\n",
+            "max_pooling2d_1 (MaxPooling2 (None, 13, 13, 256)       0         \n",
+            "_________________________________________________________________\n",
+            "flatten_1 (Flatten)          (None, 43264)             0         \n",
+            "_________________________________________________________________\n",
+            "dense_1 (Dense)              (None, 128)               5537920   \n",
+            "_________________________________________________________________\n",
+            "dense_2 (Dense)              (None, 10)                1290      \n",
+            "=================================================================\n",
+            "Total params: 5,541,770\n",
+            "Trainable params: 5,541,770\n",
+            "Non-trainable params: 0\n",
+            "_________________________________________________________________\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "id": "FEJ9FeVQ76aV",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 391
+        },
+        "outputId": "9d302358-1ad3-4f86-bb7b-f9634f05f735"
+      },
+      "cell_type": "code",
+      "source": [
+        "model.fit(X_train_reshaped,y_train_cat,epochs=10,batch_size=128,validation_split=0.3,verbose=1)"
+      ],
+      "execution_count": 13,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "Train on 42000 samples, validate on 18000 samples\n",
+            "Epoch 1/10\n",
+            "42000/42000 [==============================] - 191s 5ms/step - loss: 0.4586 - acc: 0.8420 - val_loss: 0.3459 - val_acc: 0.8667\n",
+            "Epoch 2/10\n",
+            "42000/42000 [==============================] - 193s 5ms/step - loss: 0.2777 - acc: 0.8990 - val_loss: 0.3338 - val_acc: 0.8785\n",
+            "Epoch 3/10\n",
+            "42000/42000 [==============================] - 190s 5ms/step - loss: 0.2237 - acc: 0.9180 - val_loss: 0.2797 - val_acc: 0.9006\n",
+            "Epoch 4/10\n",
+            "42000/42000 [==============================] - 189s 5ms/step - loss: 0.1871 - acc: 0.9308 - val_loss: 0.3414 - val_acc: 0.8833\n",
+            "Epoch 5/10\n",
+            "42000/42000 [==============================] - 190s 5ms/step - loss: 0.1574 - acc: 0.9423 - val_loss: 0.3161 - val_acc: 0.8947\n",
+            "Epoch 6/10\n",
+            "42000/42000 [==============================] - 191s 5ms/step - loss: 0.1313 - acc: 0.9515 - val_loss: 0.2709 - val_acc: 0.9113\n",
+            "Epoch 7/10\n",
+            "42000/42000 [==============================] - 190s 5ms/step - loss: 0.1111 - acc: 0.9595 - val_loss: 0.2772 - val_acc: 0.9122\n",
+            "Epoch 8/10\n",
+            "42000/42000 [==============================] - 193s 5ms/step - loss: 0.0934 - acc: 0.9661 - val_loss: 0.2923 - val_acc: 0.9137\n",
+            "Epoch 9/10\n",
+            "42000/42000 [==============================] - 188s 4ms/step - loss: 0.0772 - acc: 0.9722 - val_loss: 0.3393 - val_acc: 0.9122\n",
+            "Epoch 10/10\n",
+            "42000/42000 [==============================] - 191s 5ms/step - loss: 0.0650 - acc: 0.9770 - val_loss: 0.3838 - val_acc: 0.9043\n"
+          ],
+          "name": "stdout"
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "<keras.callbacks.History at 0x7f453213b128>"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 13
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "id": "BWpTdnpx76aZ",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 34
+        },
+        "outputId": "1f71fa84-cab2-4101-a189-f3cc24d162df"
+      },
+      "cell_type": "code",
+      "source": [
+        "results = model.evaluate(X_test_reshaped,y_test_cat)"
+      ],
+      "execution_count": 14,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "10000/10000 [==============================] - 10s 1ms/step\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "id": "h17JqHwo76ab",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 34
+        },
+        "outputId": "fd5b01d3-c787-44e2-e360-9ff16fb5b7d2"
+      },
+      "cell_type": "code",
+      "source": [
+        "print(\"Accuracy: {:.2f}\".format(results[1]))"
+      ],
+      "execution_count": 15,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "Accuracy: 0.90\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "id": "ak6Ag3NCEV53",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "cell_type": "code",
+      "source": [
+        "from keras.layers import AveragePooling2D"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "id": "erHfMObHEjjB",
+        "colab_type": "text"
+      },
+      "cell_type": "markdown",
+      "source": [
+        "### Trying:\n",
+        "    \n",
+        "    1 Conv2D layer\n",
+        "    1 AveragePooling2D layer\n",
+        "    \n",
+        "    1 Flatten layer\n",
+        "    1 Dense Inner layer\n",
+        "    1 Output Layer"
+      ]
+    },
+    {
+      "metadata": {
+        "id": "QtrnHkncEajj",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "cell_type": "code",
+      "source": [
+        "K.clear_session()\n",
+        "\n",
+        "model = Sequential()\n",
+        "model.add(Conv2D(64,(3,3),input_shape=(28,28,1),activation='relu'))\n",
+        "model.add(Conv2D(128,(3,3),input_shape=(28,28,1),activation='relu'))\n",
+        "model.add(MaxPool2D(pool_size=(2,2)))\n",
+        "\n",
+        "model.add(Flatten())\n",
+        "model.add(Dense(128,activation='relu'))\n",
+        "model.add(Dense(10,activation='softmax'))\n",
+        "\n",
+        "model.compile(loss='categorical_crossentropy',optimizer='rmsprop',metrics=['accuracy'])"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "metadata": {
+        "id": "R7ZTdLVXFfV5",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 340
+        },
+        "outputId": "51d3fed7-e801-4cbd-e857-78aa7bacb6a5"
+      },
+      "cell_type": "code",
+      "source": [
+        "model.summary()"
+      ],
+      "execution_count": 29,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "_________________________________________________________________\n",
+            "Layer (type)                 Output Shape              Param #   \n",
+            "=================================================================\n",
+            "conv2d_1 (Conv2D)            (None, 26, 26, 64)        640       \n",
+            "_________________________________________________________________\n",
+            "conv2d_2 (Conv2D)            (None, 24, 24, 128)       73856     \n",
+            "_________________________________________________________________\n",
+            "max_pooling2d_1 (MaxPooling2 (None, 12, 12, 128)       0         \n",
+            "_________________________________________________________________\n",
+            "flatten_1 (Flatten)          (None, 18432)             0         \n",
+            "_________________________________________________________________\n",
+            "dense_1 (Dense)              (None, 128)               2359424   \n",
+            "_________________________________________________________________\n",
+            "dense_2 (Dense)              (None, 10)                1290      \n",
+            "=================================================================\n",
+            "Total params: 2,435,210\n",
+            "Trainable params: 2,435,210\n",
+            "Non-trainable params: 0\n",
+            "_________________________________________________________________\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "id": "q4bmpiyNE6Yf",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 391
+        },
+        "outputId": "df3e8bae-f2b3-4732-ab3e-0a1c403be5dc"
+      },
+      "cell_type": "code",
+      "source": [
+        "model.fit(X_train_reshaped,y_train_cat,epochs=10,batch_size=128,validation_split=0.3,verbose=1)"
+      ],
+      "execution_count": 30,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "Train on 42000 samples, validate on 18000 samples\n",
+            "Epoch 1/10\n",
+            "42000/42000 [==============================] - 320s 8ms/step - loss: 0.4596 - acc: 0.8366 - val_loss: 0.3508 - val_acc: 0.8776\n",
+            "Epoch 2/10\n",
+            "42000/42000 [==============================] - 317s 8ms/step - loss: 0.2659 - acc: 0.9034 - val_loss: 0.3687 - val_acc: 0.8633\n",
+            "Epoch 3/10\n",
+            "42000/42000 [==============================] - 312s 7ms/step - loss: 0.2025 - acc: 0.9254 - val_loss: 0.3189 - val_acc: 0.8866\n",
+            "Epoch 4/10\n",
+            "42000/42000 [==============================] - 322s 8ms/step - loss: 0.1576 - acc: 0.9423 - val_loss: 0.2597 - val_acc: 0.9071\n",
+            "Epoch 5/10\n",
+            "42000/42000 [==============================] - 321s 8ms/step - loss: 0.1201 - acc: 0.9565 - val_loss: 0.3054 - val_acc: 0.9049\n",
+            "Epoch 6/10\n",
+            "42000/42000 [==============================] - 320s 8ms/step - loss: 0.0932 - acc: 0.9663 - val_loss: 0.2822 - val_acc: 0.9135\n",
+            "Epoch 7/10\n",
+            "42000/42000 [==============================] - 321s 8ms/step - loss: 0.0698 - acc: 0.9744 - val_loss: 0.3113 - val_acc: 0.9235\n",
+            "Epoch 8/10\n",
+            "42000/42000 [==============================] - 323s 8ms/step - loss: 0.0529 - acc: 0.9808 - val_loss: 0.3041 - val_acc: 0.9233\n",
+            "Epoch 9/10\n",
+            "42000/42000 [==============================] - 321s 8ms/step - loss: 0.0383 - acc: 0.9863 - val_loss: 0.3770 - val_acc: 0.9166\n",
+            "Epoch 10/10\n",
+            "42000/42000 [==============================] - 321s 8ms/step - loss: 0.0299 - acc: 0.9891 - val_loss: 0.3761 - val_acc: 0.9221\n"
+          ],
+          "name": "stdout"
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "<keras.callbacks.History at 0x7f452cb4ba20>"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 30
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "id": "KHjf0HUJ76a0",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 34
+        },
+        "outputId": "adfe4931-8204-4920-c3d5-f3d73435e0b5"
+      },
+      "cell_type": "code",
+      "source": [
+        "results = model.evaluate(X_test_reshaped,y_test_cat)"
+      ],
+      "execution_count": 32,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "10000/10000 [==============================] - 22s 2ms/step\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "id": "LK7sekkbW8du",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 34
+        },
+        "outputId": "22e34691-936b-4da8-ab1f-e29d6449eb95"
+      },
+      "cell_type": "code",
+      "source": [
+        "print(\"Accuracy: {:.2f}\".format(results[1]))"
+      ],
+      "execution_count": 33,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "Accuracy: 0.92\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "metadata": {
+        "id": "EmmsDxEDXWv-",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "cell_type": "code",
+      "source": [
+        ""
+      ],
+      "execution_count": 0,
+      "outputs": []
+    }
+  ]
+}
